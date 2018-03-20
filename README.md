@@ -26,10 +26,10 @@ export API_KEY_PAYMO="your paymo API key";
 `python run.py`
 # Screenshots
 
-![Index](https://imgur.com/XIZsDAA.jpg)
+![Index](https://imgur.com/XIZsDAA.jpg | width=200)
 
 
-![Clients List](https://imgur.com/JdS63l1.jpg)
+<img src="https://imgur.com/JdS63l1.jpg" width="200px">
 
 
 ![Mark Billed](https://imgur.com/1js6RLH.jpg)
