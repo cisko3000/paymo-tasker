@@ -20,18 +20,22 @@ export API_KEY_PAYMO="your paymo API key";
 `chmod +x settings.sh`
 ## How to run
 `$export APP_SETTINGS="config.DevConfig"`
+
 `. settings.sh`
+
 `python run.py`
 # Screenshots
 
-![Index](https://imgur.com/XIZsDAA)
+![Index](https://imgur.com/XIZsDAA.jpg)
 
 
-![Clients List](https://imgur.com/JdS63l1)
+![Clients List](https://imgur.com/JdS63l1.jpg)
 
 
-![Mark Billed](https://imgur.com/1js6RLH)
+![Mark Billed](https://imgur.com/1js6RLH.jpg)
 
-My web dev portfolio:<https://www.losangelescoder.com>
+My web dev portfolio:
+<https://www.losangelescoder.com>
 
-My music:<https://soundcloud.com/cisko3000>
+My music:
+<https://soundcloud.com/cisko3000>
