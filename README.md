@@ -24,14 +24,14 @@ export API_KEY_PAYMO="your paymo API key";
 `python run.py`
 # Screenshots
 
-![alt text](https://imgur.com/XIZsDAA "Index")
+![Index](https://imgur.com/XIZsDAA)
 
 
-![alt text](https://imgur.com/JdS63l1 "Clients List")
+![Clients List](https://imgur.com/JdS63l1)
 
 
-![alt text](https://imgur.com/1js6RLH "Mark Billed")
+![Mark Billed](https://imgur.com/1js6RLH)
 
-[My web dev portfolio](https://www.losangelescoder.com)
+My web dev portfolio:<https://www.losangelescoder.com>
 
-[My music](https://soundcloud.com/cisko3000)
+My music:<https://soundcloud.com/cisko3000>
