@@ -1,0 +1,161 @@
+<head>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<script
+        src="https://code.jquery.com/jquery-3.1.0.min.js"
+        integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+<script>
+  $(document).ready(function() {
+    Stripe.setPublishableKey('{{ app.config.API_KEY_STRIPE_PUBLIC }}');
+    var $form = $("#payment-form");
+    $form.submit(function(event) {
+      $form.find('.submit').prop('disabled',true);
+      Stripe.card.createToken($form, stripeResponseHandler);
+      return false;
+    });
+
+    function stripeResponseHandler(status, response) {
+      // Grab the form:
+      var $form = $('#payment-form');
+
+      if (response.error) { // Problem!
+
+        // Show the errors on the form:
+        $form.find('.payment-errors').text(response.error.message);
+        $form.find('.submit').prop('disabled', false); // Re-enable submission
+
+      } else { // Token was created!
+
+        // Get the token ID:
+        var token = response.id;
+
+        // Insert the token ID into the form so it gets submitted to the server:
+        $form.append($('<input type="hidden" name="stripeToken">').val(token));
+
+        // Submit the form:
+        $form.get(0).submit();
+      }
+    };
+  });
+</script>
+<style>
+body {
+  background-color: #000;
+}
+h1 {
+  line-height:.1;
+}
+h1, h2 {
+  color:#666;
+}
+h2 {
+  font-weight:bold;
+  color:#888;
+}
+label {
+  color:#888;
+  font-weight:bold;
+}
+input {
+  line-height:2;
+  width:100%;
+}
+button[type="submit"] {
+  width:auto;
+  padding:10px;
+/*   text-transform:uppercase; */
+/*   box-shadow:0px 0px 40px white; */
+  font-size:1.7em;
+  font-weight:bold;
+}
+p {
+  font-size:1.5em;
+  color:#DDD;
+}
+.desc {
+  font-size: 1.3em;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 col-md-5">
+      <br><br>
+      <div class="text-right pull-right hidden-sm hidden-xs">
+        <h1>Website Name.com</h1>
+        <h2>Payment Portal</h2>
+        <img src="https://www.highspeedthai.com/Images/stripelogo2.png" style="width:40%">
+      </div>
+      <div class="hidden-md hidden-lg">
+        <h1>Website Name.com</h1>
+        <h2>Payment Portal</h2>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-5" >
+      <br><br>
+      <form action="{{ url_for('portal', customer_info=customer_info) }}"
+       method="POST" id="payment-form">
+      <input type="hidden" name="type" value="{{info.type}}">
+      <input type="hidden" name="plan_id" value="{{ info.plan_id }}">
+      <input type="hidden" name="email" value="{{ info.email }}">
+      <label for="email">Email:</label><br>
+      <p>{{info.email}}</p>
+      
+      <input type="hidden" name="name">
+      <label for="name">Name:</label><br>
+      <p>{{ info.name }}</p>
+      <hr>
+      <table>
+        <tr>
+          <td style="width:40%" valign=top>
+            <input type="hidden" name="service">
+            <label for="service">Service:</label><br>
+            <p class="desc">{{info.service}}</p>
+          </td>
+          <td style="padding-left:20px;" valign=top>
+            <input type="hidden" name="amount">
+            <label for="amount">Amount:</label><br>
+            {% with amount = info["amount"] %}
+            {% with dollars = amount|string %}
+            <p class="desc">${{ dollars[:-2] }}<sup>.{{ dollars[-2:] }}</sup>{% if info.type=="subscription"%}/month{%endif%}</p>
+            {% endwith %}
+            {% endwith %}
+          </td>
+        </tr>
+      </table>
+      
+      <label for="service">Card Number:</label><br>
+      <input type="text" size="20" data-stripe="number"><br><br>
+
+      <table><tr><td>
+      <label for="service">Expiration (MM/YY):</label><br>
+      <input type="text" style="width:auto" size="2" data-stripe="exp_month">
+      <span style="color:#DDD">/</span>
+      <input type="text" style="width:auto" size="2" data-stripe="exp_year">
+        </td><td style="padding-left:20px;">
+
+      <label for="service">CVC:</label><br>
+      <input type="text" style="width:auto" size="4" data-stripe="cvc">
+        </td>
+        </tr>
+      </table>
+      <br>
+      <img class="hidden-md hidden-lg" src="https://www.highspeedthai.com/Images/stripelogo2.png" style="width:30%;padding-right:20px;">
+      <button class="submit" type="submit" class="btn btn-default">
+        {% if info.type == "subscription" %}
+        Subscribe
+        {% else %}
+        Send Payment
+        {% endif %}
+<!--         <span style="font-size:1.3em;">»</span> -->
+      </button>
+      <br><br>
+      </form>
+    </div>
+  </div>
+</body>
