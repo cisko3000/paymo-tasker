@@ -38,6 +38,12 @@ class BaseConfig(object):
 	API_KEY_STRIPE_PUBLIC = os.environ.get('API_KEY_STRIPE_PUBLIC','')
 	API_KEY_PAYMO  = os.environ.get('API_KEY_PAYMO','')
 
+	COMPANY_ADDRESS1  = os.environ.get('COMPANY_ADDRESS1','')
+	COMPANY_ADDRESS2  = os.environ.get('COMPANY_ADDRESS2','')
+	COMPANY_PHONE  = os.environ.get('COMPANY_PHONE','')
+	COMPANY_URL  = os.environ.get('COMPANY_URL','')
+
+
 
 class DevConfig(BaseConfig):
 	SECURITY_REGISTERABLE = False

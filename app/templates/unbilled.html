@@ -37,6 +37,11 @@
 	<input class="hidden" type="hidden" name="date2" value="{{ date2 }}">
 	<button class="btn btn-primary pull-right" type="submit" name="mark_billed" value="MARK">Mark Billed</button>
 </form>
+<form method="POST" action="{{ url_for('create_invoice', client_id=client_id )}}">
+	<input class="hidden" type="hidden" name="date1" value="{{ date1 }}">
+	<input class="hidden" type="hidden" name="date2" value="{{ date2 }}">
+	<button class="btn btn-primary pull-right" type="submit" name="generate_invoice" value="GENERATE">Generate Invoice</button>
+</form>
 </div>
 {% endblock %}
 
@@ -44,6 +49,11 @@
 <script>
 	$(document).ready(function() {
 		$('button[name="mark_billed"]').click(function() {
+			$("input.hidden").find('input[name="date1"]').first().val($("form.main").find('input[name="date1"]').first().val());
+			$("input.hidden").find('input[name="date2"]').first().val($("form.main").find('input[name="date2"]').first().val());
+
+		});
+		$('button[name="generate_invoice"]').click(function() {
 			$("input.hidden").find('input[name="date1"]').first().val($("form.main").find('input[name="date1"]').first().val());
 			$("input.hidden").find('input[name="date2"]').first().val($("form.main").find('input[name="date2"]').first().val());
 

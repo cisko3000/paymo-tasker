@@ -7,10 +7,27 @@ from datetime import datetime
 
 from itsdangerous import URLSafeSerializer
 
-from flask import Flask, render_template, jsonify, request, url_for, flash, redirect
+from flask import (
+	Flask,
+	render_template,
+	jsonify,
+	request,
+	url_for,
+	flash,
+	redirect,
+	current_app,
+	send_from_directory
+	)
 import requests
 import json
 
+
+from invoicer import (
+	slugify,
+	generate_invoice,
+	add_to_worksheet,
+	prepare_invoice_dictionary,
+	)
 # yourdate = dateutil.parser.parse(datestring)
 
 class PaymoAPI(object):
@@ -21,7 +38,6 @@ class PaymoAPI(object):
 		res = requests.get("https://app.paymoapp.com/api/clients",
 			auth = (self.api_key,'any-text-here'))
 		res = json.loads(res.text)
-		# raise ValueError(res)
 		res['clients'] = sorted(res['clients'], key=lambda client: client['name'])
 		return res
 
@@ -155,6 +171,53 @@ def create_app():
 		)
 		flash('Error. No entries marked billed.') if not entries_billed else None		
 		return redirect(url_for('client', client_id=client_id))
+
+	@app.route('/client/<int:client_id>/create-invoice', methods=["POST"])
+	def create_invoice(client_id):
+		if not request.form.get('generate_invoice', False):
+			flash("Request form error.")
+			return redirect(url_for('client', client_id=client_id))
+		try:
+			date1 = request.form.get('date1',None) if request.method == "POST" else request.args.get('date1',None)
+			date2 = request.form.get('date2',None) if request.method == "POST" else request.args.get('date2',None)
+			date1 = datetime.strptime(date1,'%m/%d/%Y')
+			date1 = pytz.utc.localize(date1)
+			date2 = datetime.strptime(date2,'%m/%d/%Y')
+			date2 = pytz.utc.localize(date2)
+		except:
+			return redirect(url_for('client', client_id=client_id))
+
+		entries = paymo.client_unbilled_entries(client_id, date1, date2)
+		total = sum([x['duration'] for x in entries]) / 60.00 / 60.00
+		client_name = paymo.client_name_from_id(client_id)		
+		date = datetime.today()
+		# add project_name to entries
+		projects = paymo.get_projects(client_id)
+		
+		inv_data = prepare_invoice_dictionary(date, client_name, entries)
+
+		the_dir = os.path.dirname(current_app.root_path)
+		the_dir = the_dir+"/generated"
+		if not os.path.exists(the_dir):
+			os.makedirs(the_dir)
+		print inv_data['bill-to']
+		print date.strftime("%m%d%Y")
+		invoice_filename = slugify('invoice_%s_%s' % ( inv_data['bill-to'], date.strftime("%m%d%Y") ))
+		invoice_filename += '.xlsx'
+		company_data = {
+			'address1': current_app.config['COMPANY_ADDRESS1'],
+			'address2': current_app.config['COMPANY_ADDRESS2'],
+			'phone': current_app.config['COMPANY_PHONE'],
+			'url': current_app.config['COMPANY_URL'],
+			}
+		generate_invoice(inv_data, the_dir+"/"+invoice_filename, company_data)
+		return redirect(url_for('download_invoice', filename=invoice_filename))
+
+	@app.route('/download-invoice/<path:filename>', methods=["GET"])
+	def download_invoice(filename):
+		the_dir = os.path.dirname(current_app.root_path)
+		the_dir = the_dir+"/generated/"
+		return send_from_directory(the_dir,filename)	
 
 
 	@app.route('/project/')
