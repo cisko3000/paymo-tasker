@@ -13,46 +13,97 @@ import json
 
 # yourdate = dateutil.parser.parse(datestring)
 
+class PaymoAPI(object):
+	def __init__(self, api_key):
+		self.api_key = api_key
 
+	def clients(self):
+		res = requests.get("https://app.paymoapp.com/api/clients",
+			auth = (self.api_key,'any-text-here'))
+		res = json.loads(res.text)
+		# raise ValueError(res)
+		res['clients'] = sorted(res['clients'], key=lambda client: client['name'])
+		return res
+
+	def client_entries(self, client_id, start, end, **kwargs):
+		# kwargs : total_hours (Bool), billed (Bool)
+		# query = 'where=time_interval in ("2016-08-23T00:00:00Z","2016-09-27T00:00:00Z")'
+		start, end = pytz.utc.localize(start), pytz.utc.localize(end)
+		start, end = start.isoformat(), end.isoformat()
+		query = 'where=time_interval in ("%s","%s")&client_id=%sinclude=entries' % (
+					start, end, client_id
+					)
+		response = requests.get(
+			"https://app.paymoapp.com/api/entries?"+query,
+			auth= (self.api_key, 'any-text-here')
+			)
+		response_data = json.loads(res.text)
+		if "billed" in kwargs and (kwargs["billed"] == True or kwargs["billed"] == False):
+			return [e for e in response_data['entries'] if e['billed'] is kwargs["billed"]]
+		else:
+			return response_data['entries']
+
+	def client_unbilled_entries(self,client_id, date1, date2):
+		endpoint = "https://app.paymoapp.com/api/clients/%s?" % client_id
+		query = "include=projects.tasks.entries"
+
+		res = requests.get(endpoint+query, auth=(self.api_key,"any-text-here"))
+		res_dict = json.loads(res.text)
+		
+		entries = []
+		for p in res_dict['clients'][0]['projects']:
+			for task in p['tasks']:
+				task['entries'] = filter(lambda x: True if not x['billed'] else False,
+					task['entries'])
+				task['entries'] = filter(lambda x: x.get('end_time', False),
+					task['entries'])
+				task['entries'] = filter(lambda x: \
+					dateutil.parser.parse(x['end_time']) >= date1 and \
+					dateutil.parser.parse(x['end_time']) <= date2,
+					task['entries'])
+				entries += [x for x in task['entries']]
+		return entries
+
+
+	def client_name_from_id(self, client_id):
+		endpoint = "https://app.paymoapp.com/api/clients/%s?" % client_id
+		query = "include=projects"
+		res = requests.get(endpoint+query, auth=(self.api_key,"any-text-here"))
+		res_dict = json.loads(res.text)
+		return res_dict['clients'][0]['name']
+
+	def mark_entries_billed(self,entries):
+		results = []
+		for entry in entries:
+			try:
+				update_result = requests.put(
+				"https://app.paymoapp.com/api/entries/%s" % entry['id'],
+				auth = (self.api_key, 'any-text-here'),
+				json = { "billed": True }
+				)
+				results.append(dict(entry, update_result=update_result))
+				time.sleep(0.2)
+			except:
+				import traceback
+				traceback.print_exc()
+		return results
 
 def create_app():
 	# If string is passed to Flask(), then templates folder config is not initialized
 	app = Flask(__name__)
 	app.config.from_object(os.environ['APP_SETTINGS'])
-	
+	paymo = PaymoAPI(app.config['API_KEY_PAYMO'])
 
 	@app.route('/')
 	def home():
-		res = requests.get(
-			"https://app.paymoapp.com/api/me",
-			auth = (app.config["API_KEY_PAYMO"],'any-text-here'))
-		print res.text
-		query = 'where=time_interval in ("2016-08-23T00:00:00Z","2016-09-27T00:00:00Z")'
-		query += '&client_id=4927460'
-		query += 'include=entries'
-		# query+= '&include=entries.id,entries.billed'
-		res = requests.get(
-			"https://app.paymoapp.com/api/entries?"+query,
-			auth = (app.config["API_KEY_PAYMO"],'any-text-here')
-			)
-		res_dict = json.loads(res.text)
-		n_dict = [e for e in res_dict['entries'] if e['billed'] is False]
-		total_hours = sum([ int(e['duration']) for e in res_dict['entries']]) / 60.0 / 60.0
-		return render_template("index.html", not_billed = n_dict, total_hours=total_hours)
+		return render_template("index.html")
 
 	@app.route('/client/')
 	@app.route('/client/<int:client_id>', methods=["GET","POST"])
 	def client(client_id=None):
 		if not client_id:
-			# res = requests.get(
-			# 	"https://app.paymoapp.com/api/me",
-			# 	auth = (app.config["API_KEY_PAYMO"],'any-text-here'))
-			res = requests.get(
-				"https://app.paymoapp.com/api/clients",
-				auth = (app.config["API_KEY_PAYMO"],'any-text-here')
-				)
-			res_dict = json.loads(res.text)
-			return render_template("clients.html", data=res_dict)
+			clients = paymo.clients()
+			return render_template("clients.html", data=clients)
 		try:
 			date1 = request.form.get('date1',None) if request.method == "POST" else request.args.get('date1',None)
 			date2 = request.form.get('date2',None) if request.method == "POST" else request.args.get('date2',None)
@@ -63,25 +114,11 @@ def create_app():
 		except:
 			date1 = datetime(2018,5,27,0,  0, 0, 0,pytz.UTC)
 			date2 = datetime(2018,10,27,23,59,59, 0,pytz.UTC)	
-		endpoint = "https://app.paymoapp.com/api/clients/%s?" % client_id
-		query = "include=projects.tasks.entries"
-		# query paymo API
-		res = requests.get(endpoint+query,auth= (app.config["API_KEY_PAYMO"],"any-text-here"))
-		res_dict = json.loads(res.text)
-		client_name = res_dict['clients'][0]['name']
-		projects = res_dict['clients'][0]['projects']
-		# get total hours
-		total = []
-		entries = []
-		for p in projects:
-			for task in p['tasks']:
-				for e in task['entries']:
-					if not e['billed'] and e.get('end_time',False): 
-						dateEnd = dateutil.parser.parse(e['end_time'])
-						if dateEnd >= date1 and dateEnd <= date2:
-							entries.append(e)
-							total.append(e['duration'])
-		total = sum(total) / 60.0 / 60.0
+		client_name = paymo.client_name_from_id(client_id)
+		entries = paymo.client_unbilled_entries(client_id, date1, date2)
+		entries = [dict(entry, client_id=client_id) for entry in entries]
+		total = sum([x['duration'] for x in entries]) / 60.00 / 60.00
+		
 		return render_template('unbilled.html',
 			client_name = client_name,
 			client_id=client_id,
@@ -92,6 +129,9 @@ def create_app():
 
 	@app.route('/client/<int:client_id>/mark-billed', methods=["POST"])
 	def mark_billed(client_id):
+		if not request.form.get('mark_billed', False):
+			flash("Request form error.")
+			return redirect(url_for('client', client_id=client_id))
 		try:
 			date1 = request.form.get('date1',None) if request.method == "POST" else request.args.get('date1',None)
 			date2 = request.form.get('date2',None) if request.method == "POST" else request.args.get('date2',None)
@@ -101,43 +141,20 @@ def create_app():
 			date2 = pytz.utc.localize(date2)
 		except:
 			return redirect(url_for('client', client_id=client_id))
-		endpoint = "https://app.paymoapp.com/api/clients/%s?" % client_id
-		query = "include=projects.tasks.entries"
-		# query paymo API
-		res = requests.get(endpoint+query,auth= (app.config["API_KEY_PAYMO"],"any-text-here"))
-		res_dict = json.loads(res.text)
-		client_name = res_dict['clients'][0]['name']
-		projects = res_dict['clients'][0]['projects']
-		# get total hours
-		total = []
-		entries = []
-		for p in projects:
-			for task in p['tasks']:
-				for e in task['entries']:
-					# If entry has not been marked billed and has an end_time
-					if not e['billed'] and e.get('end_time',False): 
-						dateEnd = dateutil.parser.parse(e['end_time'])
-						if dateEnd >= date1 and dateEnd <= date2:
-							entries.append(e)
-							total.append(e['duration'])
-		total = sum(total) / 60.0 / 60.0
-		import traceback
-		try:
-			if client_id and request.form.get('mark_billed'):
-				for e in entries:
-					requests.put(
-						"https://app.paymoapp.com/api/entries/%s" % e['id'],
-						auth = (app.config["API_KEY_PAYMO"], 'any-text-here'),
-						json = { "billed": True }
-						)
-					time.sleep(0.2)
-			flash('%s hours marked billed.' % total)
-			# date1=date1.srtftime("%m/%d/%Y"), date2=date2.srtftime("%m/%d/%Y"))
-			return redirect(url_for('client', client_id=client_id))
-		except:
-			traceback.print_exc()
-			return 'Error. No entries marked billed.'
 
+		entries = paymo.client_unbilled_entries(client_id, date1, date2)
+		total = sum([x['duration'] for x in entries]) / 60.00 / 60.00
+
+		entries_billed = paymo.mark_entries_billed(entries)
+		total_billed = sum([x['duration'] for x in entries_billed]) / 60.00 / 60.00
+
+		flash('%s hours marked billed (%s/%s entries).' % (
+			total_billed,
+			len(entries_billed),
+			len(entries))
+		)
+		flash('Error. No entries marked billed.') if not entries_billed else None		
+		return redirect(url_for('client', client_id=client_id))
 
 
 	@app.route('/project/')
@@ -170,37 +187,36 @@ def create_app():
 			token = request.form.get("stripeToken")
 			# Create or get existing customer
 			customers = stripe.Customer.list()
-			customer = [x for x in customers['data'] if x['email']==request.form.get('email')]
-			if not customer:
-				customer = stripe.Customer.create(
-					source=token,
-					description="New Customer",
-					email=request.form.get('email'),
-				)
-			else:
-				customer = customer[0]
-			# Subscribe or charge customer
-			if request.form.get("type") == "subscription":
-				stripe.Subscription.create(
-					customer=customer.id,
-					plan= request.form.get("plan_id"),
-				)
-				return 'customer subscribed'
-			else:
-				try:
-					charge = stripe.Charge.create(
+			customer = [x for x in customers['data'] if x['email']==request.form.get('email','').trim()]
+			customer = customer[0] if customer else stripe.Customer.create(
+									source=token,
+									description="New Customer",
+									email=request.form.get('email'),
+									)
+			stripe_result = None
+			try:
+				if request.form.get("type") == "subscription":
+					stripe_result = stripe.Subscription.create(
+						customer=customer.id,
+						plan= request.form.get("plan_id"),
+					)
+				else:
+					stripe_result = stripe.Charge.create(
 						amount = request.form.get("amount"),
 						currency="usd",
 						source=token,
 						description= request.form.get("description")
 					)
-				except stripe.error.CardError as e:
-					print 'there was an error'
-				return 'payment made'
-			return 'something wrong happened'
+			except stripe.error.CardError as e:
+				print 'there was an error'
+			except Exception as e:
+				raise Exception(e)
+			print(stripe_result)
+			flash("Transaction was successful.")
+			return redirect(url_for('home'))
+
 		uss = URLSafeSerializer('subscribe123')
 		info = uss.loads(customer_info)
-		print info
 		return render_template("payment.html", info=info, customer_info=customer_info)
 
 	@app.route('/portal-generator', methods=['GET','POST'])
@@ -251,6 +267,7 @@ def create_app():
 		except:
 			return "usage: /striper/&lt;amount&gt;"
 	return app
+
 if __name__ == '__main__':
 	app.run(debug=True)
 

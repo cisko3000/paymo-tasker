@@ -1,35 +1,9 @@
-<head>
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+{% extends "index.html" %}
 
-<script
-        src="https://code.jquery.com/jquery-3.1.0.min.js"
-        integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
-        crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-<script  src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
-		integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
-		crossorigin="anonymous"></script>
-<link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet">
-<script>
-	$(document).ready(function() {
-		$.ajax();
-		$('input[name="date1"]').datepicker();
-		$('input[name="date2"]').datepicker();
-	});
-</script>
-</head>
-<body>
+
+{% block content %}
 <h1>Unbilled Hours: {{client_name}}</h1>
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul class=flashes>
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
+
 <table class="table">
 	<tr>
 		<th>Client ID</th>
@@ -64,13 +38,16 @@
 	<button class="btn btn-primary pull-right" type="submit" name="mark_billed" value="MARK">Mark Billed</button>
 </form>
 </div>
-</body>
+{% endblock %}
+
+{% block js_script %}
 <script>
 	$(document).ready(function() {
 		$('button[name="mark_billed"]').click(function() {
 			$("input.hidden").find('input[name="date1"]').first().val($("form.main").find('input[name="date1"]').first().val());
 			$("input.hidden").find('input[name="date2"]').first().val($("form.main").find('input[name="date2"]').first().val());
 
-		})
-	})
+		});
+	});
 </script>
+{% endblock %}
