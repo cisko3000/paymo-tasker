@@ -4,3 +4,4 @@ prod
 *.coverage
 settings.sh
 generated
+app.db

@@ -2,10 +2,16 @@
 ## About
 This tool is for users of Paymo project management and time keeping app.
 
-It allows one to mark their time entries as billed.
+* For personal use only because of no password protection
+
+* Mark batch time entries as billed
+
+* Generate and download invoices from time entries (.xlsx format)
+
+
 I wrote this tool because I did not want to manually mark my time entries as billed.
 
-There is another feature in this tool that allows one to create payment and subscription portals. It uses Stripe as backend and payment processing. I do not recommend hosting any of this code online since it is not password protected or anything.
+There is another feature in this tool that allows one to create payment and subscription portals. It uses Stripe as backend and payment processing. I do not recommend hosting any of this code online since it is not password protected.
 
 This tool is meant to be run locally and only when needed.
 
@@ -25,6 +31,11 @@ Create `settings.sh` file
 export API_KEY_STRIPE="your stripe api key";
 export API_KEY_STRIPE_PUBLIC="your public stripe api key";
 export API_KEY_PAYMO="your paymo API key";
+
+export COMPANY_ADDRESS1="Your company or office address";
+export COMPANY_ADDRESS2="Bell Gardens, CA (putting my city on the map)";
+export COMPANY_PHONE="555-555-55555";
+export COMPANY_URL="www.cisko3000.com";
 
 ```
 `chmod +x settings.sh`

@@ -1,9 +1,8 @@
 import os
 import time
+from datetime import datetime
 import pytz
 import dateutil.parser
-from datetime import datetime
-
 
 from itsdangerous import URLSafeSerializer
 
@@ -20,7 +19,6 @@ from flask import (
 	)
 import requests
 import json
-
 
 from invoicer import (
 	slugify,
@@ -88,6 +86,18 @@ class PaymoAPI(object):
 		res_dict = json.loads(res.text)
 		return res_dict['clients'][0]['name']
 
+	def get_projects(self, client_id=None):
+		res = requests.get(
+			"https://app.paymoapp.com/api/projects",
+			auth = (self.api_key,'any-text-here')
+			)
+		res_dict = json.loads(res.text)
+		projects = res_dict['projects']
+		# list of dictionaries with: code, id, client_id, name
+		return projects
+
+
+
 	def mark_entries_billed(self,entries):
 		results = []
 		for entry in entries:
@@ -109,6 +119,14 @@ def create_app():
 	app = Flask(__name__)
 	app.config.from_object(os.environ['APP_SETTINGS'])
 	paymo = PaymoAPI(app.config['API_KEY_PAYMO'])
+
+	from models import db, Invoice
+	db.init_app(app)
+
+	@app.before_first_request
+	def create_user():
+		db.create_all()
+		db.session.commit()
 
 	@app.route('/')
 	def home():
@@ -192,10 +210,15 @@ def create_app():
 		client_name = paymo.client_name_from_id(client_id)		
 		date = datetime.today()
 		# add project_name to entries
-		projects = paymo.get_projects(client_id)
-		
-		inv_data = prepare_invoice_dictionary(date, client_name, entries)
+		projects = paymo.get_projects()
+		projects = filter(lambda x: x['client_id'] == client_id, projects)
 
+		# Place project name info in entries
+		for entry in entries:
+			the_project = next(iter(filter(lambda x: x['id']==entry['project_id'],projects)), None)
+			entry['project_name'] = the_project['name'] if the_project else ''
+
+		inv_data = prepare_invoice_dictionary(date, client_name, entries)
 		the_dir = os.path.dirname(current_app.root_path)
 		the_dir = the_dir+"/generated"
 		if not os.path.exists(the_dir):
@@ -223,22 +246,6 @@ def create_app():
 	@app.route('/project/')
 	@app.route('/project/<int:project_id>')
 	def project(project_id=None):
-		if not project_id:
-			res = requests.get(
-				"https://app.paymoapp.com/api/me",
-				auth = (app.config["API_KEY_PAYMO"],'any-text-here'))
-			print res.text
-			query = 'include=tasks.entries'
-			query +='&where=time_interval in ("2016-08-23T00:00:00Z","2016-09-27T00:00:00Z")'
-			res = requests.get(
-				"https://app.paymoapp.com/api/projects?"+query,
-				auth = (app.config["API_KEY_PAYMO"],'any-text-here')
-				)
-			res_dict = json.loads(res.text)
-			projects = res_dict['projects']
-			return jsonify({'data':projects})
-			projects = [str([str(y)+"<br>" for y in x])+"<br>" for x in projects]
-			return str(projects)
 		return render_template("index.html", not_billed = n_dict, total_hours=total_hours)	
 
 

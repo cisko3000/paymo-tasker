@@ -188,7 +188,7 @@ def prepare_invoice_dictionary(date, client_name, entries):
 		temp_group = list(group)
 
 		temp_dict = temp_group[0]
-		temp_dict['description'] = str(key)
+		temp_dict['description'] = str(key) if not temp_group[0]['project_name'] else temp_group[0]['project_name']
 		temp_dict['qty'] = sum([entry['duration'] for entry in temp_group]) / 60.00 / 60.00
 		temp_dict['unit'] = 'hrs'
 		temp_dict['unit_price'] = '60'
