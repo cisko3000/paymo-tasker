@@ -128,6 +128,26 @@ def create_app():
 		db.create_all()
 		db.session.commit()
 
+	@app.template_filter()
+	def add_commas(value):
+		return format(int(value), ',d')
+	
+	def get_new_invoice_number(customer_str):
+		try:
+			with open('invoice_count.txt','r+') as cfile:
+				data = json.load(cfile)
+				invoice_number = int(data.get(customer_str, 0))+1
+				data[customer_str] = invoice_number
+				cfile.seek(0)
+				json.dump(data,cfile)
+		except IOError:
+			with open('invoice_count.txt','w') as nfile:
+				data = {customer_str:1001}
+				json.dump(data,nfile)
+				invoice_number = 1001
+		return invoice_number
+
+
 	@app.route('/')
 	def home():
 		return render_template("index.html")
@@ -225,7 +245,20 @@ def create_app():
 			os.makedirs(the_dir)
 		print inv_data['bill-to']
 		print date.strftime("%m%d%Y")
-		invoice_filename = slugify('invoice_%s_%s' % ( inv_data['bill-to'], date.strftime("%m%d%Y") ))
+
+
+		new_invoice = Invoice()
+		new_invoice.number = get_new_invoice_number(client_name)
+		new_invoice.customer_name = client_name
+		new_invoice.amount_due = (sum([x['duration'] * 60.00 for x in entries]) / 60.00 / 60.00 ) * 100
+		new_invoice.amount_paid = 0
+		new_invoice.generated_filename = invoice_filename
+		
+		invoice_filename = slugify('inv_%s_%s_%s' % ( 
+			inv_data['bill-to'],
+			new_invoice.number,
+			date.strftime("%m%d%Y") )
+		)
 		invoice_filename += '.xlsx'
 		company_data = {
 			'address1': current_app.config['COMPANY_ADDRESS1'],
@@ -234,13 +267,25 @@ def create_app():
 			'url': current_app.config['COMPANY_URL'],
 			}
 		generate_invoice(inv_data, the_dir+"/"+invoice_filename, company_data)
+		db.session.add(new_invoice)
+		db.session.commit()
 		return redirect(url_for('download_invoice', filename=invoice_filename))
 
 	@app.route('/download-invoice/<path:filename>', methods=["GET"])
 	def download_invoice(filename):
 		the_dir = os.path.dirname(current_app.root_path)
 		the_dir = the_dir+"/generated/"
-		return send_from_directory(the_dir,filename)	
+		return send_from_directory(the_dir,filename)
+
+	@app.route('/toggle-paid/<int:inv_id>', methods=["POST"])
+	def toggle_paid(inv_id):
+		inv = Invoice.query.get(inv_id)
+		if not inv.amount_paid or inv.amount_paid != inv.amount_due:
+			inv.amount_paid = inv.amount_due
+		else:
+			inv.amount_paid = 0
+		db.session.commit()
+		return redirect(url_for('invoices'))
 
 
 	@app.route('/project/')
@@ -325,6 +370,11 @@ def create_app():
 			res = stripe.Plan.list()
 			plans = res['data']
 			return render_template("portal-generator.html", plans = plans)
+
+	@app.route('/invoices')
+	def invoices():
+		invoices = Invoice.query.all()
+		return render_template("invoices.html", invoices=invoices)
 	
 	@app.route('/stripe/calc/<amount>')
 	def stripe_calc(amount):

@@ -15,17 +15,19 @@ class Base(db.Model):
 											onupdate = db.func.current_timestamp())	
 
 class Invoice(Base):
-	customer_name = db.Column(db.String(128), unique=True, 
+	customer_name = db.Column(db.String(128),
 		info={
 		'label': 'Customer Name',
 		# 'validators' : Length(min=1,max=31), 
 		})
-	number = db.Column(db.String(128), info={'label': 'Number'})
+	number = db.Column(db.String(128), unique=True, info={'label': 'Number'})
 	amount_due = db.Column(db.Integer(), info={'label': 'Amount Due'})
 	amount_paid = db.Column(db.Integer(), info={'label': 'Amount Paid'})
-	void = db.Column(db.Boolean(), default=False, info={'label': 'Amount Paid'})
+	void = db.Column(db.Boolean(), default=False, info={'label': 'Voided'})
+	generated_filename = db.Column(db.String(128), default=False, info={'label': 'Generated Filename'})
 
 	date_due = db.Column(db.DateTime)
 
 	def __repr__(self):
 		return self.name
+

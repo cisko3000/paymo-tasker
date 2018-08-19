@@ -1,0 +1,46 @@
+{% extends "index.html" %}
+
+
+{% block content %}
+<h1>Invoices</h1>
+<table class="table">
+	<tr>
+		<th>Number</th>
+		<th>Customer</th>
+		<th class="text-right">Due</th>
+		<th class="text-right">Paid</th>
+		<th>&nbsp;</th>
+		<th>&nbsp;</th>
+		<th>&nbsp;</th>
+		<th>Due</th>
+	</tr>
+	{% for inv in invoices %}
+	<tr>
+		<td>{{ inv.number }}</td>
+		<td>{{ inv.customer_name }}</td>
+		<td class="text-right">
+		{% with dollars = inv.amount_due|string %}
+            <p class="desc">${{ dollars[:-2] | add_commas }}<sup>.{{ dollars[-2:] }}</sup>
+		{% endwith%}
+		</td>
+		<td class="text-right">
+		{% with dollars = inv.amount_paid|string if inv.amount_paid else '000'%}
+            <p class="desc">${{ dollars[:-2] | add_commas }}<sup>.{{ dollars[-2:] }}</sup>
+		{% endwith%}
+	</td>
+		<td>{{ "Void" if inv.void else "" }}</td>
+		<td>
+			<a href="{{url_for('download_invoice', filename=inv.generated_filename) }}">
+				Download Invoice
+			</a>
+		</td>
+		<td>
+			<form action="{{url_for('toggle_paid', inv_id=inv.id) }}" method="POST">
+				<input type="submit" value="Mark Paid">
+			</form>
+		</td>
+		<td>{{ inv.date_due.strftime('%m/%d/%Y') if inv.date_due else '' }}</td>
+	</tr>
+	{% endfor %}
+</table>
+{% endblock %}
