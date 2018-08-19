@@ -67,7 +67,7 @@ def write_invoice_to_worksheet(workbook, worksheet, inv_data, company_data):
 
 	merge_format = workbook.add_format({
 		'bold':1,
-		'align':'center',
+		'align':'left',
 		'valign':'vcenter',
 		'fg_color':'white',
 		'font_color':'#272fa3',
@@ -81,17 +81,22 @@ def write_invoice_to_worksheet(workbook, worksheet, inv_data, company_data):
 		# 'font_color':'#ed2728',
 		# 'font_size':22,
 		})
-	worksheet.merge_range('A4:C5','LosAngelesCoder.com',merge_format)
+	worksheet.merge_range('A4:D5','LosAngelesCoder.com',merge_format)
 	# Write In Cells
 	# worksheet.write(1, 0,"Invoice",font_size_22)
-	worksheet.merge_range('A2:B2', "Invoice",font_size_16_bb)
+	# worksheet.merge_range('A2:B2', "Invoice",font_size_16_bb)
 	# worksheet.write(1, 5,"Invoice #:",font_size_22)
+	
 	worksheet.merge_range('E2:F2', "Invoice #",merge_format_right)
+	worksheet.write(1, 6, inv_data.get('invoice-number','')  , font_size_11)
+
 	worksheet.write(1, 7,"",font_size_22)
 	worksheet.set_row(1,23)
 
+	# invoice date
 	worksheet.write(2, 5,"Date:",merge_format_right)
 	worksheet.write(2, 6, inv_data.get('date','')  , font_size_11)
+
 	worksheet.set_row(2,30)
 	# worksheet.write(3, 0, inv_data.get("company", "Sample Company"),font_size_20)
 	# worksheet.set_row(3,23)
@@ -122,7 +127,7 @@ def write_invoice_to_worksheet(workbook, worksheet, inv_data, company_data):
 	worksheet.write(17, 5,"Unit Price",font_size_16_bb)
 	# worksheet.write(17, 6,"",font_size_16_bb)
 	worksheet.write(17, 6,"Amount",merge_format_right)
-	worksheet.write(17, 7,"Notes",font_size_16_bb)
+	# worksheet.write(17, 7,"Notes",font_size_16_bb)
 	# worksheet.set_row(22,20,bottom_border)
 	# # Start from cell 25
 	first_row_with_line_item = 18
@@ -138,7 +143,7 @@ def write_invoice_to_worksheet(workbook, worksheet, inv_data, company_data):
 		worksheet.write(row, 4, items.get('unit'))
 		worksheet.write(row, 5,items.get('unit_price'),money)
 		worksheet.write(row, 6, items.get('Amount'),money)
-		worksheet.write(row, 7, items.get('notes'),font_size_16_bb)
+		# worksheet.write(row, 7, items.get('notes'),font_size_16_bb)
 		row += 1
 		col = 0
 	row += 1
@@ -150,9 +155,15 @@ def write_invoice_to_worksheet(workbook, worksheet, inv_data, company_data):
 	worksheet.write(row, 6, inv_data.get("delivery-fee",00.00), money)
 	row += 1
 	worksheet.write(row + 4, 5, "Total", merge_format_right)
-	worksheet.write(row + 4, 6, "=SUM(G%s:G%s)" % (first_row_with_line_item+1,row), money)
-	worksheet.set_column(1,1,20)
-	worksheet.set_column(6,6,20)
+
+	#worksheet.write(row + 4, 6, "=SUM(G%s:G%s)" % (first_row_with_line_item+1,row), money)
+	worksheet.write(row + 4, 6,
+		sum([i.get('Amount',0) for i in inv_data.get('items',[]) ])
+
+		# '{:.2f}'.format(sum([i.get('Amount',0) for i in inv_data.get('items',[]) ]))
+		, money)
+	worksheet.set_column(1,1,12)
+	worksheet.set_column(6,6,12)
 
 	# add borders
 	worksheet.conditional_format('A18:G%s' % (row+5), { 'type': 'no_errors', 'format' : bordered })
@@ -176,7 +187,7 @@ def generate_invoice(inv_data, filepath, company_data):
 	write_invoice_to_worksheet(workbook, worksheet, inv_data, company_data)
 	workbook.close()
 
-def prepare_invoice_dictionary(date, client_name, entries):
+def prepare_invoice_dictionary(date, client_name, entries, invoice_number=None):
 	# items_total = sum([ i.ext_price for i in items if i.ext_price != None])
 	# items.sort(key=lambda x: x.product.name if x and x.product else '')
 	items = []
@@ -201,6 +212,7 @@ def prepare_invoice_dictionary(date, client_name, entries):
 		"company" : "LosAngelesCoder.com",
 		"date" : date.strftime("%m/%d/%Y"),
 		"bill-to" : client_name,
+		'invoice-number' : invoice_number if invoice_number else '',
 		"items" : [
 			{
 			'description': i['description'],

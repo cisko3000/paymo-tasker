@@ -145,7 +145,7 @@ def create_app():
 				data = {customer_str:1001}
 				json.dump(data,nfile)
 				invoice_number = 1001
-		return invoice_number
+		return customer_str.upper()+'-'+str(invoice_number)
 
 
 	@app.route('/')
@@ -233,12 +233,14 @@ def create_app():
 		projects = paymo.get_projects()
 		projects = filter(lambda x: x['client_id'] == client_id, projects)
 
+		new_invoice = Invoice()
+		new_invoice.number = get_new_invoice_number(client_name)
 		# Place project name info in entries
 		for entry in entries:
 			the_project = next(iter(filter(lambda x: x['id']==entry['project_id'],projects)), None)
 			entry['project_name'] = the_project['name'] if the_project else ''
 
-		inv_data = prepare_invoice_dictionary(date, client_name, entries)
+		inv_data = prepare_invoice_dictionary(date, client_name, entries,new_invoice.number)
 		the_dir = os.path.dirname(current_app.root_path)
 		the_dir = the_dir+"/generated"
 		if not os.path.exists(the_dir):
@@ -247,19 +249,19 @@ def create_app():
 		print date.strftime("%m%d%Y")
 
 
-		new_invoice = Invoice()
-		new_invoice.number = get_new_invoice_number(client_name)
-		new_invoice.customer_name = client_name
-		new_invoice.amount_due = (sum([x['duration'] * 60.00 for x in entries]) / 60.00 / 60.00 ) * 100
-		new_invoice.amount_paid = 0
-		new_invoice.generated_filename = invoice_filename
-		
+
 		invoice_filename = slugify('inv_%s_%s_%s' % ( 
 			inv_data['bill-to'],
 			new_invoice.number,
 			date.strftime("%m%d%Y") )
 		)
 		invoice_filename += '.xlsx'
+
+		new_invoice.customer_name = client_name
+		new_invoice.amount_due = (sum([x['duration'] * 60.00 for x in entries]) / 60.00 / 60.00 ) * 100
+		new_invoice.amount_paid = 0
+		new_invoice.generated_filename = invoice_filename
+		
 		company_data = {
 			'address1': current_app.config['COMPANY_ADDRESS1'],
 			'address2': current_app.config['COMPANY_ADDRESS2'],
