@@ -1,0 +1,26 @@
+.header {
+  padding: 20px;
+  background-color: #0c40cf;
+  color: #FFF; }
+  .header li {
+    margin-top: 10px; }
+    .header li a {
+      color: #333;
+      font-size: 1.4rem;
+      font-weight: bold;
+      background-color: #FFF;
+      padding: 6px 12px;
+      border-radius: 4px; }
+      .header li a:hover {
+        text-decoration: none; }
+
+h1.page-title {
+  padding-left: 20px;
+  font-weight: bold; }
+
+table.full-page th:first-child, table.full-page td:first-child {
+  padding-left: 20px; }
+table.full-page tr:hover {
+  background-color: #f7f7f7; }
+
+/*# sourceMappingURL=custom.css.map */

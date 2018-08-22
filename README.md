@@ -45,6 +45,10 @@ export COMPANY_URL="www.cisko3000.com";
 `. settings.sh`
 
 `python run.py`
+
+## How to convert xlsx files to PDF
+`libreoffice --headless --convert-to pdf *.xlsx`
+
 # Screenshots
 
 <img src="https://imgur.com/XIZsDAA.jpg" width="350px">

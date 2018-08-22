@@ -6,3 +6,4 @@ settings.sh
 generated
 app.db
 invoice_count.txt
+.sass-cache

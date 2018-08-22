@@ -1,0 +1,38 @@
+$bg-blue: #0c40cf;
+$white: #FFF;
+$black: #000;
+$grey: #333;
+.header {
+	padding:20px;
+	background-color: $bg-blue;
+	color: $white;	
+	li {
+		margin-top: 10px;
+		a {
+			color: $grey;
+			font-size: 1.4rem;
+			font-weight:bold;
+			background-color: $white;
+			padding: 6px 12px;
+			border-radius: 4px;
+			&:hover {
+				text-decoration:none;
+
+			}
+		}
+		
+	}
+}
+h1.page-title {
+	padding-left:20px;
+	font-weight:bold;
+	// color: lighten($grey,7%);
+}
+table.full-page {
+	th:first-child, td:first-child {
+		padding-left:20px;
+	}
+	tr:hover {
+		background-color: lighten($grey,77%);
+	}
+}
