@@ -16,11 +16,42 @@
 
 h1.page-title {
   padding-left: 20px;
-  font-weight: bold; }
+  font-weight: bold;
+  display: inline-block; }
 
 table.full-page th:first-child, table.full-page td:first-child {
   padding-left: 20px; }
 table.full-page tr:hover {
-  background-color: #f7f7f7; }
+  background-color: #fafafa; }
+
+a.small-btn {
+  text-transform: lowercase;
+  background-color: #fcfcfc;
+  border: 1px solid #f2f2f2;
+  text-transform: lowercase;
+  font-size: 1.7rem;
+  padding: 4px 10px;
+  border-radius: 20px; }
+  a.small-btn:hover {
+    border: 1px solid #ebebeb;
+    text-decoration: none; }
+
+div.inline-secondary-btns {
+  display: inline-block;
+  vertical-align: middle;
+  padding-left: 10px;
+  margin-left: 10px;
+  padding-bottom: 10px; }
+  div.inline-secondary-btns form {
+    display: inline-block;
+    margin-bottom: 0px; }
+    div.inline-secondary-btns form button[type="submit"] {
+      background-color: #265cf2;
+      background-color: #858585;
+      border: 1px solid #7d7d7d;
+      text-shadow: 0px 0px 3px #333; }
+    div.inline-secondary-btns form button[type="submit"]:hover {
+      background-color: #0c40cf;
+      border: 1px solid #0d43d9; }
 
 /*# sourceMappingURL=custom.css.map */

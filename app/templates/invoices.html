@@ -31,7 +31,7 @@
 	</td>
 		<td>{{ "Void" if inv.void else "" }}</td>
 		<td>
-			<a href="{{url_for('download_invoice', filename=inv.generated_filename) }}">
+			<a class="small-btn" href="{{url_for('download_invoice', filename=inv.generated_filename) }}">
 				Download Invoice
 			</a>
 		</td>

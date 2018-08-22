@@ -1,14 +1,15 @@
 {% extends "base.html" %}
 
+{% set page_title = "Clients" %}
 
 {% block content %}
-<h1>Clients</h1>
-<table class="table">
+<h1 class="page-title">Clients</h1>
+<table class="table full-page">
 	{% for c in data.clients %}
 	<tr>
 		<td>{{ c.name }}</td>
 		<td>{{ c.id }}</td>
-		<td><a href="{{url_for('client',client_id=c.id) }}">Unbilled Hours</a></td>
+		<td><a class="small-btn" href="{{url_for('client',client_id=c.id) }}">Unbilled Hours &rsaquo;</a></td>
 		<td>{{ c.phone }}</td>
 		<td>{{ c.email }}</td>
 		<td>{{ c.website }}</td>

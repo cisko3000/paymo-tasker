@@ -26,6 +26,7 @@ $grey: #333;
 h1.page-title {
 	padding-left:20px;
 	font-weight:bold;
+	display:inline-block;
 	// color: lighten($grey,7%);
 }
 table.full-page {
@@ -33,6 +34,42 @@ table.full-page {
 		padding-left:20px;
 	}
 	tr:hover {
-		background-color: lighten($grey,77%);
+		background-color: lighten($grey,78%);
+	}
+}
+a.small-btn {
+	text-transform:lowercase;
+	background-color: lighten($grey,79%);
+	border: 1px solid lighten($grey,75%);
+	text-transform: lowercase;
+	font-size: 1.7rem;
+	padding: 4px 10px;
+	border-radius: 20px;
+	&:hover {
+		border: 1px solid lighten($grey,72%);
+		text-decoration:none;
+	}
+}
+div.inline-secondary-btns {
+	display:inline-block;
+	vertical-align:middle;
+	// border-left: 1px solid lighten($bg-blue,20%);
+	padding-left: 10px;
+	margin-left:10px;
+	padding-bottom:10px;
+	form {
+		display:inline-block;
+		margin-bottom:0px;
+		button[type="submit"] {
+			background-color: lighten($bg-blue,12%);
+			background-color: lighten($grey,32%);
+			border:1px solid lighten($grey,29%);
+			text-shadow: 0px 0px 3px $grey;
+
+		}
+		button[type="submit"]:hover {
+			background-color: lighten($bg-blue,0%);
+			border:1px solid lighten($bg-blue,2%);
+		}
 	}
 }
