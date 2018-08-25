@@ -1,35 +1,9 @@
-<head>
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+{% extends "base.html" %}
 
-<script
-        src="https://code.jquery.com/jquery-3.1.0.min.js"
-        integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
-        crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-<script>
-  $(document).ready(function() {
-    $.ajax();
-  });
-</script>
+{% set page_title = "Portal Generator" %}
+
+{% block content %}
 <style>
-body {
-  background-color: #000;
-}
-h1 {
-  line-height:.1;
-}
-h1, h2 {
-  color:#666;
-}
-h2 {
-  font-weight:bold;
-  color:#888;
-}
-label {
-  color:#888;
-  font-weight:bold;
-}
 input {
   line-height:2;
   width:100%;
@@ -50,31 +24,38 @@ p {
   font-size: 1.3em;
 }
 </style>
-</head>
-<body>
-<div class="container">
+<h1 class="page-title">Portal Generator</h1>
+<div class="divider"></div>
   <form action="{{ url_for('generator') }}" method="POST">
-  <div class="row">
-  <label for="name">Name:</label>  
-  <input type="text" name="name"><br>
-
-  <label for="email">Email:</label>  
-  <input type="text" name="email"><br><br>
-  <hr>
-  <label for="name">Service:</label>  
-  <select name="subscription">
-    <option value="">- Select -</option>
-    {% for plan in plans %}
-      <option value="{{ plan["id"] }}">{{ plan["name"] }}</option>
-    {% endfor %}
-  </select>
-  <h4 style="color:#BBB">OR</h4>
-  <label for="description">Description:</label>  
-  <input style="width:auto" type="text" name="description">
-  <label for="amount">Amount:</label>  
-  <input style="width:auto" type="text" name="amount"><br>
-  <br>
-  <button type="submit">Generate</button>
-  </div>
-</form>
-</body>
+<div class="container">
+    <div class="col-12 col-6">
+        <div class="form-group">
+          <label for="name">Name:</label>  
+          <input type="text" name="name"><br>
+        </div>
+        <div class="form-group">
+          <label for="email">Email:</label>  
+          <input type="text" name="email"><br><br>
+        <hr>
+        </div>
+        <div class="form-group">
+          <label for="name">Service:</label>  
+          <select name="subscription">
+          <option value="">- Select -</option>
+          {% for plan in plans %}
+            <option value="{{ plan["id"] }}">{{ plan["name"] }}</option>
+          {% endfor %}
+          </select>
+        </div>
+        <h4 style="color:#BBB">OR</h4>
+        <div class="form-group">
+        <label for="description">Description:</label>  
+        <input style="width:auto" type="text" name="description">
+        <label for="amount">Amount:</label>  
+        <input style="width:auto" type="text" name="amount"><br>
+        <br>
+        <button type="submit">Generate</button>
+    </div>
+</div>
+  </form>
+{% endblock %}

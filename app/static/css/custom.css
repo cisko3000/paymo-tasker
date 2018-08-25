@@ -54,4 +54,8 @@ div.inline-secondary-btns {
       background-color: #0c40cf;
       border: 1px solid #0d43d9; }
 
+.divider {
+  border-top: 1px solid #ddd;
+  width: 100%; }
+
 /*# sourceMappingURL=custom.css.map */
