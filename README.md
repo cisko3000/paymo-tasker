@@ -51,13 +51,11 @@ export COMPANY_URL="www.cisko3000.com";
 
 # Screenshots
 
-<img src="https://imgur.com/XIZsDAA.jpg" width="350px">
+<img src="https://i.imgur.com/2ZzSOCz.png" width="350px">
 
 
-<img src="https://imgur.com/JdS63l1.jpg" width="350px">
+<img src="https://i.imgur.com/2rhKT3K.png" width="350px">
 
-
-<img src="https://imgur.com/1js6RLH.jpg" width="350px">
 
 My web dev portfolio:
 * <https://www.losangelescoder.com>
