@@ -31,3 +31,28 @@ class Invoice(Base):
 	def __repr__(self):
 		return self.name
 
+class RecurringInvoice(Base):
+	client_name = db.Column(db.String(128),
+		info={
+		'label': 'Customer Name',
+		})
+	paymo_client_id = db.Column(db.Integer(), info={'label': 'Paymo Client ID'})
+	service_name = db.Column(db.String(128),
+		info={
+		'label': 'Service Name',
+		# 'validators' : Length(min=1,max=31), 
+		})
+	notes = db.Column(db.String(512),
+		info={
+		'label': 'Notes',
+		# 'validators' : Length(min=1,max=31), 
+		})
+	start_date = db.Column(db.DateTime)
+	amount = db.Column(db.Integer(), info={'label': 'Amount'})
+	stripe_amount = db.Column(db.Integer(), info={'label': 'Stripe Amount'})
+
+	current = db.Column(db.Boolean(), default=False, info={'label': 'Current'})
+
+
+	def __repr__(self):
+		return self.name

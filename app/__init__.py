@@ -120,7 +120,7 @@ def create_app():
 	app.config.from_object(os.environ['APP_SETTINGS'])
 	paymo = PaymoAPI(app.config['API_KEY_PAYMO'])
 
-	from models import db, Invoice
+	from models import db, Invoice, RecurringInvoice
 	db.init_app(app)
 
 	@app.before_first_request
@@ -377,7 +377,12 @@ def create_app():
 	def invoices():
 		invoices = Invoice.query.all()
 		return render_template("invoices.html", invoices=invoices)
-	
+
+	@app.route('/recurring')
+	def recurring():
+		recurring = RecurringInvoice.query.all()
+		return render_template("recurring.html", recurring=recurring)
+
 	@app.route('/stripe/calc/<amount>')
 	def stripe_calc(amount):
 		try:
