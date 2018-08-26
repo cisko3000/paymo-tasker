@@ -19,6 +19,8 @@
 		<th class="text-right">Period</th>
 		<th class="text-right">Stripe Amount</th>
 		<th class="">Current</th>
+		<th> </th>
+		<th> </th>
 	</tr>
 	{% for r in recurring %}
 	<tr>
@@ -28,19 +30,23 @@
 		<td>{{ r.notes }}</td>
 		<td>{{ r.start_date.strftime('%m/%d/%Y') if r.start_date else '' }}</td>
 		<td class="text-right">
-		{% with dollars = r.amount|string %}
+			{% if r.amount %}
+			{% with dollars = r.amount|string %}
             <p class="desc">${{ dollars[:-2] | add_commas }}<sup>.{{ dollars[-2:] }}</sup>
-		{% endwith%}
+			{% endwith%}
+			{% endif %}
 		</td>
 		<td class="text-right">
 			{{ r.period_type }}
 		</td>
 		<td class="text-right">
+			{% if r.stripe_amount %}
 		{% with dollars = r.stripe_amount|string %}
             <p class="desc">${{ dollars[:-2] | add_commas }}<sup>.{{ dollars[-2:] }}</sup>
-		{% endwith%}
+		{% endwith %}
+		{% endif %}
 		</td>
-		<td>{{ "Yes" if r.current else "Due" }}</td>
+		<td class="text-center">{{ "Yes" if r.current else "Due" }}</td>
 		<td>
 			<a class="small-btn" href="{#url_for('download_roice', filename=r.generated_filename) #}">
 				Download invoice
@@ -54,4 +60,29 @@
 	</tr>
 	{% endfor %}
 </table>
+{% endblock %}
+
+
+{% block js_script%}
+<script>
+	$(document).ready(function() {
+		$("#newRecurringProfileConfirm").click(function(e) {
+			console.log('create clicked');
+			var data = $("#newRecurringProfileForm").serializeArray();
+			console.log(data); 
+			$.ajax({
+				type: "POST",
+				url: $SCRIPT_ROOT+"/recurring/new",
+				contentType: "application/json; charset=utf-8",
+				data: JSON.stringify($("#newRecurringProfileForm").serializeArray()),
+				success: function(data) { document.location.reload(true);},
+				dataType: "json"
+			});
+			// $('#newRecurringProfile').modal("toggle");
+		})
+		// close hook
+		// $('#newRecurringProfile').on('hide.bs.modal', function (e) {
+		// });
+	});
+</script>
 {% endblock %}

@@ -28,11 +28,13 @@
 
 {% with messages = get_flashed_messages() %}
   {% if messages %}
-    <ul class=flashes>
+  <div class="alert-success">
+    <ul class="flashes" style="margin-bottom: 0px;">
     {% for message in messages %}
       <li>{{ message }}</li>
     {% endfor %}
     </ul>
+  </div>
   {% endif %}
 {% endwith %}
 
@@ -59,11 +61,9 @@
 	</table>
 	{% endif %}
 
-	<script>
-	$(document).ready(function() {
-		$.ajax();
-	});
-	</script>
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
 	{% block js_script%}
 	{% endblock %}
 </body>

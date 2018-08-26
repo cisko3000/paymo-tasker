@@ -383,6 +383,28 @@ def create_app():
 		recurring = RecurringInvoice.query.all()
 		return render_template("recurring.html", recurring=recurring)
 
+	@app.route('/recurring/new', methods=["POST"])
+	def recurring_new():
+		new_recurring_profile_form = request.get_json()
+		def get_from_serialized_array(serialized_array,the_key):
+			return filter(lambda x:x[u'name'] == the_key , new_recurring_profile_form)[0].get(u'value','')
+		client_name = get_from_serialized_array(new_recurring_profile_form, 'client_name')
+		amount      = get_from_serialized_array(new_recurring_profile_form, 'amount')
+		start_date  = get_from_serialized_array(new_recurring_profile_form, 'start_date')
+		service_name     = get_from_serialized_array(new_recurring_profile_form, 'service_name')
+		notes       = get_from_serialized_array(new_recurring_profile_form, 'notes')
+		new_recurring_invoice = RecurringInvoice(
+			client_name = client_name,
+			amount = amount,
+			# start_date = start_date,
+			service_name = service_name,
+			notes = notes,
+			)
+		db.session.add(new_recurring_invoice)
+		db.session.commit()
+		flash('Success: New recurring invoice has been created.')
+		return jsonify(success=True)
+
 	@app.route('/stripe/calc/<amount>')
 	def stripe_calc(amount):
 		try:

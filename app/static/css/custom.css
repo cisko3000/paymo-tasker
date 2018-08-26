@@ -95,4 +95,23 @@ div.inline-secondary-btns {
 .margin-top-neg-10 {
   margin-top: -10px; }
 
+.alert-error {
+  color: #ffffff;
+  background-color: #ff1f1f;
+  border-color: #e10000;
+  border-radius: 0px;
+  font-weight: bold;
+  padding: 15px; }
+
+.alert-success {
+  color: #ffffff;
+  background-color: #009f0c;
+  border-color: #e10000;
+  border-radius: 0px;
+  font-weight: bold;
+  padding: 15px; }
+
+.flashes {
+  margin-bottom: 0px; }
+
 /*# sourceMappingURL=custom.css.map */
