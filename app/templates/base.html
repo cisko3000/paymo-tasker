@@ -12,11 +12,13 @@
 		crossorigin="anonymous"></script>
 <link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
-<title>Paymo Tasker - {{ page_title }}</title>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+
+<title>{{ page_title +' - ' if page_title else ''}}Paymo Tasker</title>
 </head>
 <body>
 <div class="header">
-	<h1>Paymo Tasker</h1>
+	<a class="white-text" href="{{ url_for('index') }}"><h1>Paymo Tasker</h1></a>
 	<ul class="list-unstyled list-inline">
 		<li><a href="{{ url_for('invoices') }}">Invoices</a></li>
 		<li><a href="{{ url_for('generator') }}">Portal Generator</a></li>
@@ -28,12 +30,13 @@
 
 {% with messages = get_flashed_messages() %}
   {% if messages %}
-  <div class="alert-success">
-    <ul class="flashes" style="margin-bottom: 0px;">
+  <div class="alert-success" id="alert-wrapper">
+    <ul class="flashes alert-left" style="margin-bottom: 0px;">
     {% for message in messages %}
       <li>{{ message }}</li>
     {% endfor %}
     </ul>
+    <div id="alert-right"><a id="alert-close-btn" class="ghost-btn">close</a></div>
   </div>
   {% endif %}
 {% endwith %}
@@ -63,6 +66,13 @@
 
 <script type=text/javascript>
   $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  $(document).ready(function() {
+  	if ($("#alert-wrapper").length && $("#alert-close-btn")) {
+  		$("#alert-close-btn").click(function() {
+  			$("#alert-wrapper").remove();
+  		})
+  	}
+  })
 </script>
 	{% block js_script%}
 	{% endblock %}

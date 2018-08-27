@@ -13,6 +13,11 @@
       border-radius: 4px; }
       .header li a:hover {
         text-decoration: none; }
+  .header .white-text {
+    color: #FFF; }
+    .header .white-text:hover {
+      color: #FFF;
+      text-decoration: none; }
 
 h1.page-title {
   padding-left: 20px;
@@ -55,6 +60,16 @@ div.inline-secondary-btns {
   div.inline-secondary-btns form {
     display: inline-block;
     margin-bottom: 0px; }
+
+.dashboard-block {
+  background-color: #fafafa;
+  border: 1px solid #f0f0f0;
+  margin-top: 20px;
+  padding-left: 10px;
+  padding-right: 10px; }
+  .dashboard-block h2 {
+    font-weight: bold;
+    font-size: 1.8rem; }
 
 .blue-btn, .confirm-btn {
   background-color: #858585;
@@ -111,7 +126,41 @@ div.inline-secondary-btns {
   font-weight: bold;
   padding: 15px; }
 
+#alert-wrapper {
+  display: table;
+  width: 100%; }
+
+#alert-left {
+  margin-bottom: 0px;
+  display: table-cell;
+  width: 75%;
+  vertical-align: top; }
+
+#alert-right {
+  display: table-cell;
+  width: 50%;
+  vertical-align: top;
+  text-align: right; }
+
+.ghost-btn {
+  background-color: #efefef;
+  color: #009f0c;
+  padding: 5px 8px;
+  border-radius: 4px;
+  text-align: right; }
+  .ghost-btn:hover {
+    color: #003904;
+    cursor: pointer;
+    text-decoration: none; }
+
 .flashes {
   margin-bottom: 0px; }
+
+.container-fluid {
+  padding-left: 20px;
+  padding-right: 20px; }
+
+.ui-datepicker {
+  margin-top: 210px; }
 
 /*# sourceMappingURL=custom.css.map */

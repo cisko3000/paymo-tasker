@@ -22,6 +22,13 @@ $grey: #333;
 		}
 		
 	}
+	.white-text {
+		color: $white;
+		&:hover {
+			color: $white;
+			text-decoration:none;
+		}
+	}
 }
 h1.page-title {
 	padding-left:20px;
@@ -77,6 +84,21 @@ div.inline-secondary-btns {
 		margin-bottom:0px;
 	}
 }
+
+.dashboard-block {
+	background-color: lighten($grey,78%);
+	border: 1px solid lighten($grey,74%);
+	margin-top:20px;
+	padding-left: 10px;
+	padding-right:10px;
+	h2 {
+		font-weight:bold;
+		font-size: 1.8rem;
+
+	}
+}
+
+
 .blue-btn {
 		background-color: lighten($grey,32%);
 		border:1px solid lighten($grey,29%);
@@ -140,6 +162,46 @@ div.inline-secondary-btns {
     font-weight: bold;
     padding: 15px;
 }
+
+#alert-wrapper {
+	display: table;
+	width: 100%;
+}
+#alert-left {
+	margin-bottom: 0px;
+	display: table-cell;
+	width: 75%;
+	vertical-align: top;
+}
+#alert-right {
+	display: table-cell;
+	width: 50%;
+	vertical-align: top;
+	text-align: right;
+}
+.ghost-btn {
+	background-color: #efefef;
+	color: #009f0c;
+	// color: white;
+	// border: 2px solid white;
+	padding: 5px 8px;
+	border-radius: 4px;
+	text-align: right;
+	&:hover {
+		color: darken(#009f0c,20%);
+		cursor:pointer;
+		text-decoration:none;
+	}
+}
+
 .flashes {
 	margin-bottom: 0px;
 }
+.container-fluid {
+	padding-left: 20px;
+	padding-right:20px;
+}
+
+.ui-datepicker{
+        margin-top: 210px;
+    }

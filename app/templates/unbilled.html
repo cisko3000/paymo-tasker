@@ -50,6 +50,8 @@
 {% block js_script %}
 <script>
 	$(document).ready(function() {
+		$('input[name="date1"]').datepicker();
+		$('input[name="date2"]').datepicker();
 		$('button[name="mark_billed"]').click(function() {
 			$("input.hidden").find('input[name="date1"]').first().val($("form.main").find('input[name="date1"]').first().val());
 			$("input.hidden").find('input[name="date2"]').first().val($("form.main").find('input[name="date2"]').first().val());

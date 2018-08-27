@@ -149,7 +149,7 @@ def create_app():
 
 
 	@app.route('/')
-	def home():
+	def index():
 		return render_template("index.html")
 
 	@app.route('/client/')
@@ -330,7 +330,7 @@ def create_app():
 				raise Exception(e)
 			print(stripe_result)
 			flash("Transaction was successful.")
-			return redirect(url_for('home'))
+			return redirect(url_for('index'))
 
 		uss = URLSafeSerializer('subscribe123')
 		info = uss.loads(customer_info)
@@ -382,6 +382,16 @@ def create_app():
 	def recurring():
 		recurring = RecurringInvoice.query.all()
 		return render_template("recurring.html", recurring=recurring)
+
+	@app.route('/recurring/delete/<int:r_id>', methods=["POST"])
+	def recurring_delete(r_id):
+		inv = RecurringInvoice.query.get(r_id)
+		if inv:
+			db.session.delete(inv)
+			db.session.commit()
+			flash("Recurring profile deleted.")
+		return redirect(url_for('recurring'))
+
 
 	@app.route('/recurring/new', methods=["POST"])
 	def recurring_new():
