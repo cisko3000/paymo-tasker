@@ -24,6 +24,8 @@ h1.page-title {
   font-weight: bold;
   display: inline-block; }
 
+table.full-page th {
+  white-space: nowrap; }
 table.full-page th:first-child, table.full-page td:first-child {
   padding-left: 20px; }
 table.full-page tr:hover {

@@ -14,7 +14,7 @@
 		<th>Paymo ID</th>
 		<th>Service</th>
 		<th>Notes</th>
-		<th class="text-right">Start</th>
+		<th class="text-center">Start</th>
 		<th class="text-right">Amount</th>
 		<th class="text-right">Period</th>
 		<th class="text-right">Stripe Amount</th>
@@ -72,15 +72,24 @@
 {% block js_script%}
 <script>
 	$(document).ready(function() {
+		var getFormAsJSON = function(jQueryFormElement) {
+			var nameValuePairs = jQueryFormElement.serializeArray();
+			return JSON.stringify(nameValuePairs.reduce(function(acc, cv) {
+				acc[cv.name] = cv.value;
+				return acc;
+			}, {}));
+		}
 		$("#newRecurringProfileConfirm").click(function(e) {
 			console.log('create clicked');
 			var data = $("#newRecurringProfileForm").serializeArray();
-			console.log(data); 
+			console.log(JSON.stringify(data, null, 4))
+
+			// console.log(data); 
 			$.ajax({
 				type: "POST",
-				url: $SCRIPT_ROOT+"/recurring/new",
-				contentType: "application/json; charset=utf-8",
-				data: JSON.stringify($("#newRecurringProfileForm").serializeArray()),
+				url: $SCRIPT_ROOT+"/api/recurring-invoices",
+				contentType: "application/json",
+				data: getFormAsJSON($("#newRecurringProfileForm")),
 				success: function(data) { document.location.reload(true);},
 				dataType: "json"
 			});

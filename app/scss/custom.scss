@@ -37,6 +37,9 @@ h1.page-title {
 	// color: lighten($grey,7%);
 }
 table.full-page {
+	th {
+		white-space:nowrap;
+	}
 	th:first-child, td:first-child {
 		padding-left:20px;
 	}

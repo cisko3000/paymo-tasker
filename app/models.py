@@ -38,15 +38,9 @@ class RecurringInvoice(Base):
 		})
 	paymo_client_id = db.Column(db.Integer(), info={'label': 'Paymo Client ID'})
 	service_name = db.Column(db.String(128),
-		info={
-		'label': 'Service Name',
-		# 'validators' : Length(min=1,max=31), 
-		})
+		info={'label': 'Service Name',})
 	notes = db.Column(db.String(512),
-		info={
-		'label': 'Notes',
-		# 'validators' : Length(min=1,max=31), 
-		})
+		info={'label': 'Notes',})
 	start_date = db.Column(db.DateTime)
 	amount = db.Column(db.Integer(), info={'label': 'Amount'})
 	stripe_amount = db.Column(db.Integer(), info={'label': 'Stripe Amount'})
@@ -55,4 +49,4 @@ class RecurringInvoice(Base):
 
 
 	def __repr__(self):
-		return self.name
+		return '<RecurringInvoice:%s>' % self.id
