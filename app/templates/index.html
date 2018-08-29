@@ -3,26 +3,68 @@
 {% set page_title = "Index" %}
 
 {% block content %}
+{% raw %}
+<div id="dashboard-app">
 <div class="container-fluid">
 	<div class="row">
-		<div class="col-sm-6 col-md-3">
+		<div class="col-sm-6 col-md-4">
 			<div class="dashboard-block">
 			<h2>Unpaid Recurring</h2>
-			<table>
-				<tr><td></td></tr>
+			<table class="dashboard-size">
+				<tr v-for="inv in recurringInvoices">
+					<td>{{inv.client_name}}</td>
+					<td class="text-right">{{inv.amount}}</td>
+					<td class="text-center">{{inv.start_date}}</td>
+				</tr>
 			</table>
 		</div>
 		</div>
-		<div class="col-sm-6 col-md-3">
+		<div class="col-sm-6 col-md-4">
 			<div class="dashboard-block">
 			<h2>Unpaid</h2>
-			<table>
-				<tr><td></td></tr>
+			<table class="dashboard-size">
+				<tr v-for="inv in unpaidInvoices">
+					<td>{{inv.number}}</td>
+					<td>{{inv.customer_name}}</td>
+					<td class="text-right">{{inv.amount_due}}</td>
+					<td class="text-center">{{inv.date_due}}</td>
+				</tr>
 			</table>
 		</div>
 		</div>
 	</div>
 </div>
+</div>
+{% endraw %}
+{% endblock %}
 
-
+{% block js_script%}
+<script>
+var dashboardApp = new Vue({
+	el: "#dashboard-app",
+	data: {
+		recurringInvoices: [],
+		unpaidInvoices: [],
+	},
+	methods: {
+		getInvoices: function() {
+			axios.get($SCRIPT_ROOT+"/api/recurring-invoices").then(response=>{
+				this.recurringInvoices = response.data;
+			}).catch(error => {
+				console.log(error);
+			});
+			axios.get($SCRIPT_ROOT+"/api/invoices").then(response=>{
+				this.unpaidInvoices = response.data;
+			}).catch(error => {
+				console.log(error);
+			});
+		},
+	},
+	computed: {
+	},
+	created() {
+		this.getInvoices();
+	}
+})
+</script>
 {% endblock %}
