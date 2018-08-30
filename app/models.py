@@ -45,8 +45,31 @@ class RecurringInvoice(Base):
 	amount = db.Column(db.Integer(), info={'label': 'Amount'})
 	stripe_amount = db.Column(db.Integer(), info={'label': 'Stripe Amount'})
 
-	current = db.Column(db.Boolean(), default=False, info={'label': 'Current'})
+	payments = db.relationship('RecurringInvoicePaymentRecord',
+		backref='recurring_invoice', lazy='dynamic',
+		order_by="RecurringInvoicePaymentRecord.date_modified.desc()")
+
+	@hybrid_method
+	def current(self):
+		if not self.payments.all() or not self.start_date:
+			return False
+		temp = self.start_date
+		temp.replace(year=datetime.today().year)
+		if temp - self.payments.first() >= 0:
+			return True
+		return False
 
 
 	def __repr__(self):
 		return '<RecurringInvoice:%s>' % self.id
+
+class RecurringInvoicePaymentRecord(Base):
+	recurring_invoice_id = db.Column(db.Integer, db.ForeignKey('recurring_invoice.id'))
+	def __repr__(self):
+		return '<%s%s object at %s, date: %s>' % (
+		# self.__class__.__module__,
+		'',
+		self.__class__.__name__,
+		hex(id(self)),
+		self.date_create.strftime("%m/%d/%Y") if self.date_create else "",
+		)

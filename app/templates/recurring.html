@@ -47,16 +47,22 @@
 		{% endwith %}
 		{% endif %}
 		</td>
-		<td class="text-center">{{ "Yes" if r.current else "Due" }}</td>
+		<td class="text-center">{{ "Yes" if r.current() else "Due" }}</td>
 		<td>
 			<a class="small-btn" href="{#url_for('download_roice', filename=r.generated_filename) #}">
 				Download invoice
 			</a>
 		</td>
 		<td>
-			<form action="{#url_for('toggle_paid', r_id=r.id) #}" method="POST">
+			{% if r.current() == False %}
+			<form action="{{ url_for('recurring_mark_paid', r_id=r.id) }}" method="POST">
 				<input type="submit" value="Mark Current">
 			</form>
+			{% else %}
+			<form action="{{ url_for('recurring_mark_unpaid', r_id=r.id) }}" method="POST">
+				<input type="submit" value="Mark Unpaid">
+			</form>
+			{% endif %}
 		</td>
 		<td>
 			<form action="{{ url_for('recurring_delete', r_id=r.id) }}" method="POST">
@@ -72,6 +78,13 @@
 {% block js_script %}
 <script>
 	$(document).ready(function() {
+		$('input[name="start_date"]').datepicker({
+		   beforeShow: function(input, inst) {
+		       $('#ui-datepicker-div').attr("inputId",this.id);
+		       $('#ui-datepicker-div').addClass("ui-datepicker-modal-field");
+		   }
+		});
+
 		var getFormAsJSON = function(jQueryFormElement) {
 			var nameValuePairs = jQueryFormElement.serializeArray();
 			return JSON.stringify(nameValuePairs.reduce(function(acc, cv) {

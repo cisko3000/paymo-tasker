@@ -36,7 +36,7 @@ def create_app():
 	app.config.from_object(os.environ['APP_SETTINGS'])
 	paymo = PaymoAPI(app.config['API_KEY_PAYMO'])
 
-	from models import db, Invoice, RecurringInvoice
+	from models import db, Invoice, RecurringInvoice, RecurringInvoicePaymentRecord
 	from mod_api import api_module
 	app.register_blueprint(api_module)
 
@@ -44,6 +44,7 @@ def create_app():
 
 	@app.before_first_request
 	def create_user():
+		# db.drop_all()
 		db.create_all()
 		db.session.commit()
 
@@ -309,6 +310,25 @@ def create_app():
 			db.session.delete(inv)
 			db.session.commit()
 			flash("Recurring profile deleted.")
+		return redirect(url_for('recurring'))
+
+	@app.route('/recurring/mark_paid/<int:r_id>', methods=["POST"])
+	def recurring_mark_paid(r_id):
+		inv = RecurringInvoice.query.get(r_id)
+		if inv:
+			inv.payments.append(RecurringInvoicePaymentRecord())
+			db.session.commit()
+			flash("Added paid record.")
+		return redirect(url_for('recurring'))
+
+	@app.route('/recurring/mark_unpaid/<int:r_id>', methods=["POST"])
+	def recurring_mark_unpaid(r_id):
+		inv = RecurringInvoice.query.get(r_id)
+		if inv and inv.payments:
+			most_recent_payment = inv.payments.first()
+			db.session.delete(most_recent_payment)
+			db.session.commit()
+			flash("Most recent period marked unpaid.")
 		return redirect(url_for('recurring'))
 
 	@app.route('/stripe/calc/<amount>')

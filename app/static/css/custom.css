@@ -84,6 +84,8 @@ div.inline-secondary-btns {
       padding-left: 10px; }
     .dashboard-block table.dashboard-size tr {
       background-color: #FFF; }
+    .dashboard-block table.dashboard-size tr:nth-child(even) {
+      background-color: #e2eaff; }
     .dashboard-block table.dashboard-size tr:hover {
       background-color: #fafafa; }
 
@@ -178,5 +180,8 @@ div.inline-secondary-btns {
 
 .ui-datepicker {
   margin-top: 210px; }
+
+.ui-datepicker-modal-field {
+  margin-top: 161px; }
 
 /*# sourceMappingURL=custom.css.map */
