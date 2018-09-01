@@ -37,13 +37,17 @@ parser.add_argument('amount'      , location='json')
 parser.add_argument('start_date'  , location='json', type=lambda d: datetime.strptime(d,"%m/%d/%Y") if d else None)
 parser.add_argument('service_name', location='json')
 parser.add_argument('notes', location='json')
+parser.add_argument('recurring_invoice_id', type=int)
 
 
 class RecurringInvoiceResource(Resource):
 	@marshal_with(recurring_invoice_fields)
 	def get(self):
-		recurring_invoices = RecurringInvoice.query.all()
-		return recurring_invoices
+		args = parser.parse_args()
+		if args['recurring_invoice_id']:
+			return [RecurringInvoice.query.get(args['recurring_invoice_id'])]
+		else:
+			return RecurringInvoice.query.all()
 	
 	@marshal_with(recurring_invoice_fields)
 	def post(self):
@@ -58,6 +62,15 @@ class RecurringInvoiceResource(Resource):
 		db.session.add(new_recurring_invoice)
 		db.session.commit()
 		return new_recurring_invoice
+
+	@marshal_with(recurring_invoice_fields)
+	def put(self):
+		args = parser.parse_args()
+		recurring_invoice = RecurringInvoice.query.get(args['recurring_invoice_id'])
+		for k,v in filter(lambda k,v: k in [], args):
+			setattr(recurring_invoice, k, v)
+		db.session.commit()
+		return recurring_invoice
 
 
 class InvoiceResource(Resource):

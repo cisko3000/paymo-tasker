@@ -22,6 +22,7 @@
 		<th> </th>
 		<th> </th>
 		<th> </th>
+		<th> </th>
 	</tr>
 	{% for r in recurring %}
 	<tr>
@@ -52,6 +53,9 @@
 			<a class="small-btn" href="{#url_for('download_roice', filename=r.generated_filename) #}">
 				Download invoice
 			</a>
+		</td>
+		<td>
+			<a class="small-btn clone-btn" href="#" data-invoice-id="{{r.id}}">clone</a>
 		</td>
 		<td>
 			{% if r.current() == False %}
@@ -93,10 +97,8 @@
 			}, {}));
 		}
 		$("#newRecurringProfileConfirm").click(function(e) {
-			console.log('create clicked');
 			var data = $("#newRecurringProfileForm").serializeArray();
 			console.log(JSON.stringify(data, null, 4))
-
 			// console.log(data); 
 			$.ajax({
 				type: "POST",
@@ -106,11 +108,30 @@
 				success: function(data) { document.location.reload(true);},
 				dataType: "json"
 			});
-			// $('#newRecurringProfile').modal("toggle");
-		})
-		// close hook
-		// $('#newRecurringProfile').on('hide.bs.modal', function (e) {
-		// });
+		});
+		// Clone
+		$(".clone-btn").each(function(idx, e) {
+			$(e).click(function(el) {
+				var formVals;
+				var invoiceId = $(el.target).attr('data-invoice-id');
+				$.ajax({
+					type: "GET",
+					url: $SCRIPT_ROOT+"/api/recurring-invoices?recurring_invoice_id="+invoiceId,
+					// contentType: "application/json",
+					// data: JSON.stringify({'recurring_invoice_id' : invoiceId}),
+					// data: {'recurring_invoice_id' : invoiceId},
+					success: function(data) { 
+						var editForm = $("#newRecurringProfileForm")
+						for ( var key in data[0] ) {
+							editForm.find('input[name="'+key+'"]').val(data[0][key]);
+						};
+						$('#newRecurringProfile').modal('show');
+					},
+					dataType: "json"
+				});
+			})
+		});
+
 	});
 </script>
 {% endblock %}
