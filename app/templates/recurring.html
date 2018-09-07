@@ -16,7 +16,7 @@
 		<th>Notes</th>
 		<th class="text-center">Start</th>
 		<th class="text-right">Amount</th>
-		<th class="text-right">Period</th>
+		<th class="text-center">Period</th>
 		<th class="text-right">Stripe Amount</th>
 		<th class="">Current</th>
 		<th> </th>
@@ -38,8 +38,8 @@
 			{% endwith%}
 			{% endif %}
 		</td>
-		<td class="text-right">
-			{{ r.period_type }}
+		<td class="text-center">
+			{{ r.period_type | title }}
 		</td>
 		<td class="text-right">
 			{% if r.stripe_amount %}
@@ -123,7 +123,7 @@
 					success: function(data) { 
 						var editForm = $("#newRecurringProfileForm")
 						for ( var key in data[0] ) {
-							editForm.find('input[name="'+key+'"]').val(data[0][key]);
+							editForm.find('input[name="'+key+'"], select[name="'+key+'"]').val(data[0][key]);
 						};
 						$('#newRecurringProfile').modal('show');
 					},

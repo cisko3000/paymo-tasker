@@ -39,6 +39,8 @@ class RecurringInvoice(Base):
 	paymo_client_id = db.Column(db.Integer(), info={'label': 'Paymo Client ID'})
 	service_name = db.Column(db.String(128),
 		info={'label': 'Service Name',})
+	period_type = db.Column(db.String(128),
+		info={'label': 'Period Type',})
 	notes = db.Column(db.String(512),
 		info={'label': 'Notes',})
 	start_date = db.Column(db.DateTime)

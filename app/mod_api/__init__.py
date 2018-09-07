@@ -36,6 +36,7 @@ parser.add_argument('client_name' , location='json')
 parser.add_argument('amount'      , location='json')
 parser.add_argument('start_date'  , location='json', type=lambda d: datetime.strptime(d,"%m/%d/%Y") if d else None)
 parser.add_argument('service_name', location='json')
+parser.add_argument('period_type' , location='json')
 parser.add_argument('notes', location='json')
 parser.add_argument('recurring_invoice_id', type=int)
 
@@ -57,6 +58,7 @@ class RecurringInvoiceResource(Resource):
 			amount = args['amount'],
 			start_date = args['start_date'],
 			service_name = args['service_name'],
+			period_type = args['period_type'],
 			notes = args['notes'],
 			)
 		db.session.add(new_recurring_invoice)
