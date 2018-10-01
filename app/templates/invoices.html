@@ -21,12 +21,12 @@
 		<td>{{ inv.customer_name }}</td>
 		<td class="text-right">
 		{% with dollars = inv.amount_due|string %}
-            <p class="desc">${{ dollars[:-2] | add_commas }}<sup>.{{ dollars[-2:] }}</sup>
+            <p class="desc">${{ dollars[:-2] | add_commas_integer_value }}<sup>.{{ dollars[-2:] }}</sup>
 		{% endwith%}
 		</td>
 		<td class="text-right">
 		{% with dollars = inv.amount_paid|string if inv.amount_paid else '000'%}
-            <p class="desc">${{ dollars[:-2] | add_commas }}<sup>.{{ dollars[-2:] }}</sup>
+            <p class="desc">${{ dollars[:-2] | add_commas_integer_value }}<sup>.{{ dollars[-2:] }}</sup>
 		{% endwith%}
 	</td>
 		<td>{{ "Void" if inv.void else "" }}</td>

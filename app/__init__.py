@@ -50,7 +50,11 @@ def create_app():
 
 	@app.template_filter()
 	def add_commas(value):
-		return format(int(value), ',d')
+		return format(int(float(value)), ',d')
+
+	@app.template_filter()
+	def add_commas_integer_value(value):
+		return format(int(float(value)/100), ',d')
 	
 	def get_new_invoice_number(customer_str):
 		try:
