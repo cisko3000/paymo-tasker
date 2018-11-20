@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_security import Security, SQLAlchemyUserDatastore, \
 	UserMixin, RoleMixin, login_required
-from datetime import date
+from datetime import date, datetime
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 from sqlalchemy import or_, and_
 
@@ -51,13 +51,13 @@ class RecurringInvoice(Base):
 		backref='recurring_invoice', lazy='dynamic',
 		order_by="RecurringInvoicePaymentRecord.date_modified.desc()")
 
-	@hybrid_method
+	@hybrid_property
 	def current(self):
 		if not self.payments.all() or not self.start_date:
 			return False
 		temp = self.start_date
 		temp.replace(year=datetime.today().year)
-		if temp - self.payments.first() >= 0:
+		if (temp - self.payments.first().date_create).total_seconds() < 0:
 			return True
 		return False
 

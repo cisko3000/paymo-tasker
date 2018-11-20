@@ -48,7 +48,7 @@
 		{% endwith %}
 		{% endif %}
 		</td>
-		<td class="text-center">{{ "Yes" if r.current() else "Due" }}</td>
+		<td class="text-center">{{ "Yes" if r.current else "Due" }}</td>
 		<td>
 			<a class="small-btn" href="{#url_for('download_roice', filename=r.generated_filename) #}">
 				Download invoice
@@ -58,7 +58,7 @@
 			<a class="small-btn clone-btn" href="#" data-invoice-id="{{r.id}}">clone</a>
 		</td>
 		<td>
-			{% if r.current() == False %}
+			{% if r.current == False %}
 			<form action="{{ url_for('recurring_mark_paid', r_id=r.id) }}" method="POST">
 				<input type="submit" value="Mark Current">
 			</form>

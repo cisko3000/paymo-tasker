@@ -19,6 +19,7 @@ recurring_invoice_fields = {
 	'service_name' : fields.String,
 	'start_date' : CustomDateField,
 	'amount' : DollarAmountField,
+	'current' : fields.Boolean
 }
 
 invoice_fields = {

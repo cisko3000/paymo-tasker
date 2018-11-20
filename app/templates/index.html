@@ -49,7 +49,9 @@ var dashboardApp = new Vue({
 	methods: {
 		getInvoices: function() {
 			axios.get($SCRIPT_ROOT+"/api/recurring-invoices").then(response=>{
-				this.recurringInvoices = response.data;
+				this.recurringInvoices = response.data.filter(function(ce) {
+					return (!ce.current);
+				});
 			}).catch(error => {
 				console.log(error);
 			});
