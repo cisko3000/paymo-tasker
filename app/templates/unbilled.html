@@ -29,7 +29,7 @@
 		<th>Billed?</th>
 		<th>Start</th>
 		<th>Stop</th>
-		<th><span class="pull-right">Delta (Minutes)<span></th>
+		<th width="1%"><span class="pull-right">Delta (Minutes)<span></th>
 	</tr>
 	{% for t in not_billed %}
 	<tr>
@@ -42,6 +42,11 @@
 
 	</tr>
 	{% endfor %}
+	{% if not_billed | length > 0 %}
+	<tr>
+		<td colspan="5" class="text-right"><b>Total Hours:</b></td><td class="text-right">{{"{:.2f}".format(total)}}</td>
+	</tr>
+	{% endif %}
 </table>
 <div class="container">
 </div>
