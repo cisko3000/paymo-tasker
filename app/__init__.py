@@ -1,6 +1,6 @@
 import os
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
 import dateutil.parser
 
@@ -90,8 +90,12 @@ def create_app():
 			date2 = datetime.strptime(date2,'%m/%d/%Y')
 			date2 = pytz.utc.localize(date2)
 		except:
-			date1 = datetime(2018,5,27,0,  0, 0, 0,pytz.UTC)
-			date2 = datetime(2018,10,27,23,59,59, 0,pytz.UTC)	
+			date1 = datetime.now()
+			date1 = date1.replace(day=1)
+			date1 = pytz.UTC.localize(date1)
+			date2 = date1.replace(month=date1.month+1)
+			date2 = date2 - timedelta(days=1)
+			date2 = date2.replace(hour=23,minute=59, second=59)
 		client_name = paymo.client_name_from_id(client_id)
 		entries = paymo.client_unbilled_entries(client_id, date1, date2)
 		entries = [dict(entry, client_id=client_id) for entry in entries]
