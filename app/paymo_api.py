@@ -82,7 +82,7 @@ class PaymoAPI(object):
 				json = { "billed": True }
 				)
 				results.append(dict(entry, update_result=update_result))
-				time.sleep(0.2)
+				time.sleep(0.15)
 			except:
 				import traceback
 				traceback.print_exc()
