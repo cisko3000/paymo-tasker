@@ -34,7 +34,7 @@ invoice_fields = {
 
 parser = reqparse.RequestParser()
 parser.add_argument('client_name' , location='json')
-parser.add_argument('amount'      , location='json')
+parser.add_argument('amount'      , location='json', type=lambda a: int((float(a) * 100.00)))
 parser.add_argument('start_date'  , location='json', type=lambda d: datetime.strptime(d,"%m/%d/%Y") if d else None)
 parser.add_argument('service_name', location='json')
 parser.add_argument('period_type' , location='json')

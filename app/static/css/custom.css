@@ -38,7 +38,8 @@ a.small-btn {
   text-transform: lowercase;
   font-size: 1.7rem;
   padding: 4px 10px;
-  border-radius: 20px; }
+  border-radius: 20px;
+  white-space: nowrap; }
   a.small-btn:hover {
     border: 1px solid #ebebeb;
     text-decoration: none; }
@@ -183,5 +184,8 @@ div.inline-secondary-btns {
 
 .ui-datepicker-modal-field {
   margin-top: 161px; }
+
+.recurring-last-profile-row td {
+  border-top: 0px solid grey !important; }
 
 /*# sourceMappingURL=custom.css.map */

@@ -56,6 +56,7 @@ a.small-btn {
 	font-size: 1.7rem;
 	padding: 4px 10px;
 	border-radius: 20px;
+	white-space: nowrap;
 	&:hover {
 		border: 1px solid lighten($grey,72%);
 		text-decoration:none;
@@ -235,4 +236,8 @@ div.inline-secondary-btns {
 // #ui-datepicker-div[inputId="start_date"] {
 .ui-datepicker-modal-field {
 	margin-top:161px;
+}
+
+.recurring-last-profile-row td {
+	border-top:0px solid grey !important;
 }

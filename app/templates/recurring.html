@@ -16,13 +16,14 @@
 		<th>Notes</th>
 		<th class="text-center">Start</th>
 		<th class="text-right">Amount</th>
-		<th class="text-center">Period</th>
-		<th class="text-right">Stripe Amount</th>
-		<th class="">Current</th>
-		<th> </th>
-		<th> </th>
-		<th> </th>
-		<th> </th>
+		<th class="text-center visible-lg">Period</th>
+		<th class="text-right  visible-lg">Stripe Amount</th>
+		<th class="visible-lg">Current</th>
+		<th class="visible-lg"> </th>
+		<th class="visible-lg"> </th>
+		<th class="visible-lg"> </th>
+		<th class="visible-lg"> </th>
+		<th class="hidden-lg"> </th>
 	</tr>
 	{% for r in recurring %}
 	<tr>
@@ -32,32 +33,32 @@
 		<td>{{ r.notes }}</td>
 		<td>{{ r.start_date.strftime('%m/%d/%Y') if r.start_date else '' }}</td>
 		<td class="text-right">
-			{% if r.amount %}
+			{% if r.amount and r.amount | string | length > 2%}
 			{% with dollars = r.amount|string %}
             <p class="desc">${{ dollars[:-2] | add_commas }}<sup>.{{ dollars[-2:] }}</sup>
 			{% endwith%}
 			{% endif %}
 		</td>
-		<td class="text-center">
+		<td class="text-center visible-lg">
 			{{ r.period_type | title }}
 		</td>
-		<td class="text-right">
+		<td class="text-right visible-lg">
 			{% if r.stripe_amount %}
 		{% with dollars = r.stripe_amount|string %}
             <p class="desc">${{ dollars[:-2] | add_commas }}<sup>.{{ dollars[-2:] }}</sup>
 		{% endwith %}
 		{% endif %}
 		</td>
-		<td class="text-center">{{ "Yes" if r.current else "Due" }}</td>
-		<td>
+		<td class="text-center visible-lg alert-danger">{{ "Yes" if r.current else "Due" }}</td>
+		<td class="visible-lg">
 			<a class="small-btn" href="{#url_for('download_roice', filename=r.generated_filename) #}">
 				Download invoice
 			</a>
 		</td>
-		<td>
+		<td class="visible-lg">
 			<a class="small-btn clone-btn" href="#" data-invoice-id="{{r.id}}">clone</a>
 		</td>
-		<td>
+		<td class="visible-lg">
 			{% if r.current == False %}
 			<form action="{{ url_for('recurring_mark_paid', r_id=r.id) }}" method="POST">
 				<input type="submit" value="Mark Current">
@@ -72,6 +73,38 @@
 			<form action="{{ url_for('recurring_delete', r_id=r.id) }}" method="POST">
 				<input type="submit" value="Delete">
 			</form>
+		</td>
+	</tr>
+	<tr class="hidden-lg recurring-last-profile-row" style="border-bottom:1px solid #000;">
+		<td class="text-center alert-danger">{{ "Yes" if r.current else "Due" }}</td>
+		<td class="text-center">
+			{{ r.period_type | title }}
+		</td>
+		<td class="text-right hidden-lg">
+			{% if r.stripe_amount %}
+		{% with dollars = r.stripe_amount|string %}
+            <p class="desc">${{ dollars[:-2] | add_commas }}<sup>.{{ dollars[-2:] }}</sup>
+		{% endwith %}
+		{% endif %}
+		</td>
+		<td class="hidden-lg">
+			<a class="small-btn" href="{#url_for('download_roice', filename=r.generated_filename) #}">
+				Download invoice
+			</a>
+		</td>
+		<td class="hidden-lg">
+			<a class="small-btn clone-btn" href="#" data-invoice-id="{{r.id}}">clone</a>
+		</td>
+		<td class="hidden-lg">
+			{% if r.current == False %}
+			<form action="{{ url_for('recurring_mark_paid', r_id=r.id) }}" method="POST" style="margin-bottom:0px">
+				<input type="submit" value="Mark Current">
+			</form>
+			{% else %}
+			<form action="{{ url_for('recurring_mark_unpaid', r_id=r.id) }}" method="POST">
+				<input type="submit" value="Mark Unpaid">
+			</form>
+			{% endif %}
 		</td>
 	</tr>
 	{% endfor %}
